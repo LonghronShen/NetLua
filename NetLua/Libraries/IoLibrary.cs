@@ -168,7 +168,11 @@ namespace NetLua
             }
             else if (obj.IsString)
             {
+#if PORTABLE
+                MemoryStream stream = new MemoryStream();
+#else
                 FileStream stream = new FileStream(obj.ToString(), FileMode.OpenOrCreate);
+#endif
                 currentOutput = CreateFileObject(stream);
                 return Lua.Return(currentOutput);
             }
@@ -184,8 +188,12 @@ namespace NetLua
 
         static LuaArguments io_temp(LuaArguments args)
         {
+#if PORTABLE
+            Stream s = new MemoryStream();
+#else
             string path = Path.GetTempFileName();
             Stream s = new FileStream(path, FileMode.Append, FileAccess.Write, FileShare.Write, Int16.MaxValue, FileOptions.DeleteOnClose);
+#endif
 
             return Lua.Return(CreateFileObject(s));
         }
